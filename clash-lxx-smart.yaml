@@ -141,6 +141,7 @@ proxy-groups:
   - {name: Meta AI, <<: *default}
   - {name: Perplexity, <<: *default}
   - {name: Stream Media, <<: *default}
+  - {name: TikTok, <<: *default}
   - {name: Youtube, <<: *default}
   - {name: GitHub, <<: *default}
   - {name: Reddit, <<: *default}  
@@ -377,7 +378,7 @@ rules:
   - RULE-SET,OKX / Domain,Crypto
   - RULE-SET,Bybit / Domain,Crypto
   - RULE-SET,Binance / Domain,Crypto
-  - RULE-SET,TikTok / Domain,Stream Media
+  - RULE-SET,TikTok / Domain,TikTok
   - RULE-SET,Youtube / Domain,Youtube
   - RULE-SET,Netflix / Domain,Stream Media
   - RULE-SET,Netflix / IP,Stream Media,no-resolve
