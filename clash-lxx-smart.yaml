@@ -9,7 +9,7 @@ proxy-providers:
   Nin1:
     url: "机场订阅"
     type: http
-    interval: 86400
+#    interval: 86400
     health-check:
       enable: true
       url: https://www.gstatic.com/generate_204
@@ -141,6 +141,7 @@ proxy-groups:
   - {name: Meta AI, <<: *default}
   - {name: Perplexity, <<: *default}
   - {name: Stream Media, <<: *default}
+  - {name: Youtube, <<: *default}
   - {name: GitHub, <<: *default}
   - {name: Reddit, <<: *default}  
   - {name: Nvidia, <<: *default}
@@ -185,10 +186,12 @@ proxy-groups:
     proxies:
       - 香港-手选
       - 香港-智选
+  
   - name: 香港-手选
     type: select
     include-all: true
     filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"
+  
   - name: 香港-智选
     type: smart
     include-all: true
@@ -202,6 +205,13 @@ proxy-groups:
       tolerance: 2
     strategy: sticky-sessions
     interval: 180
+    filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"
+
+  - name: 香港-自动
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
     filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"
  
   # 台湾组
@@ -368,7 +378,7 @@ rules:
   - RULE-SET,Bybit / Domain,Crypto
   - RULE-SET,Binance / Domain,Crypto
   - RULE-SET,TikTok / Domain,Stream Media
-  - RULE-SET,Youtube / Domain,Stream Media
+  - RULE-SET,Youtube / Domain,Youtube
   - RULE-SET,Netflix / Domain,Stream Media
   - RULE-SET,Netflix / IP,Stream Media,no-resolve
   - RULE-SET,Disney / Domain,Stream Media
