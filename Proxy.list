@@ -19,6 +19,16 @@ DOMAIN-SUFFIX,hongxingyun.vip
 DOMAIN-SUFFIX,hsy88.org
 DOMAIN-SUFFIX,yfamilys.com
 
+# 谷歌 play 商店
+DOMAIN-SUFFIX,play.google.com,PROXY
+DOMAIN-SUFFIX,play.googleapis.com,PROXY
+DOMAIN-SUFFIX,android.clients.google.com,PROXY
+DOMAIN-SUFFIX,googleapis.com,PROXY
+DOMAIN-SUFFIX,services.googleapis.cn,DIRECT   # 或试 PROXY
+DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
+DOMAIN,clientservices.googleapis.com,DIRECT
+DOMAIN,update.googleapis.com,DIRECT
+
 # IP段匹配
 IP-CIDR,142.171.133.131/32,no-resolve
 IP-CIDR,103.115.43.2/32,no-resolve
