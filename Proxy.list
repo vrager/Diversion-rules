@@ -24,7 +24,9 @@ DOMAIN-SUFFIX,popcornstream.com
 DOMAIN-SUFFIX,popcornstream.app
 DOMAIN-SUFFIX,goingbus.com
 DOMAIN-SUFFIX,goingbus.app
-
+DOMAIN-SUFFIX,firebaseio.com
+DOMAIN-SUFFIX,crashlytics.com
+DOMAIN-SUFFIX,sentry.io
 
 # 谷歌 play 商店
 DOMAIN-SUFFIX,play.google.com,PROXY
