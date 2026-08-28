@@ -19,9 +19,11 @@ DOMAIN-SUFFIX,hongxingyun.vip
 DOMAIN-SUFFIX,hsy88.org
 DOMAIN-SUFFIX,yfamilys.com
 # 爆米花播放器官方及鉴权域名
-DOMAIN-SUFFIX,popcorn.plus
 DOMAIN-KEYWORD,popcorn
-
+DOMAIN-SUFFIX,popcornstream.com
+DOMAIN-SUFFIX,popcornstream.app
+DOMAIN-SUFFIX,goingbus.com
+DOMAIN-SUFFIX,goingbus.app
 
 
 # 谷歌 play 商店
