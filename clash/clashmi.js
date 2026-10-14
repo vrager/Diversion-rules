@@ -1,7 +1,7 @@
 function main(config) {
 
   // ================================================================
-  // Clash Mi / Mihomo Perfect-Rules v1.7 (Global Auto + Region Auto + Region Manual)
+  // Clash Mi / Mihomo Perfect-Rules v1.7 (Nested Manual Node Group)
   //
   // Architecture:
   //
@@ -9,7 +9,7 @@ function main(config) {
   //          ↓
   //   Preserve Airport Basic Groups
   //          ↓
-  //   Global Auto + Region Auto & Manual Groups
+  //   Global Auto + Manual Node Group (contains Region Manuals) + Region Auto Groups
   //          ↓
   //   Perfect-Rules Service Groups
   //          ↓
@@ -359,6 +359,8 @@ function main(config) {
 
     "自动选择": "Proxy.png",
 
+    "手动选择": "Proxy.png",
+
     "国内直连": "China.png",
 
     "AI": "AI.png",
@@ -428,6 +430,8 @@ function main(config) {
     "一键代理": true,
 
     "自动选择": true,
+
+    "手动选择": true,
 
     "国内直连": true,
 
@@ -1409,7 +1413,7 @@ function main(config) {
 
 
   // ================================================================
-  // 25. Create Global Auto, Region Auto, and Region Manual groups
+  // 25. Create Global Auto, Region Auto, Region Manual, and Manual Node Group
   // ================================================================
 
   // 1. Global Auto Group
@@ -1501,387 +1505,4 @@ function main(config) {
     };
 
 
-    var icon =
-      getGroupIcon(region);
-
-
-    if (icon) {
-
-      autoGroup["icon"] = icon;
-
-    }
-
-
-    // 3. Region Manual Group ([Region])
-    var selectGroup = {
-
-      "name": region,
-
-      "type": "select",
-
-      "proxies": [autoGroupName].concat(nodes)
-
-    };
-
-
-    if (icon) {
-
-      selectGroup["icon"] = icon;
-
-    }
-
-
-    regionGroups.push(autoGroup);
-
-    regionGroups.push(selectGroup);
-
-    regionAutoNames.push(autoGroupName);
-
-    regionSelectNames.push(region);
-
-  });
-
-
-  // ================================================================
-  // 26. Domestic Direct
-  // ================================================================
-
-  var domesticDirectGroup = {
-
-    "name": "国内直连",
-
-    "type": "select",
-
-    "proxies": [
-
-      "DIRECT"
-
-    ]
-
-  };
-
-
-  var domesticIcon =
-    getGroupIcon("国内直连");
-
-
-  if (domesticIcon) {
-
-    domesticDirectGroup["icon"] =
-      domesticIcon;
-
-  }
-
-
-  // ================================================================
-  // 27. One-click Proxy & Service Group Proxies Pool
-  // ================================================================
-
-  // Includes: Global Auto + Region Auto Groups + Region Manual Groups + Domestic Direct
-  var mainProxiesPool = ["自动选择"]
-    .concat(regionAutoNames)
-    .concat(regionSelectNames)
-    .concat(["国内直连"]);
-
-
-  var mainSelector = {
-
-    "name": "一键代理",
-
-    "type": "select",
-
-    "proxies": mainProxiesPool
-
-  };
-
-
-  var mainIcon =
-    getGroupIcon("一键代理");
-
-
-  if (mainIcon) {
-
-    mainSelector["icon"] =
-      mainIcon;
-
-  }
-
-
-  // ================================================================
-  // 28. Service groups
-  // ================================================================
-
-  function createBusinessGroup(name) {
-
-    var group = {
-
-      "name": name,
-
-      "type": "select",
-
-      "proxies": mainProxiesPool
-
-    };
-
-
-    var icon =
-      getGroupIcon(name);
-
-
-    if (icon) {
-
-      group["icon"] = icon;
-
-    }
-
-
-    return group;
-
-  }
-
-
-  var businessGroups = [
-
-    createBusinessGroup("AI"),
-
-    createBusinessGroup("YouTube"),
-
-    createBusinessGroup("Google"),
-
-    createBusinessGroup("GitHub"),
-
-    createBusinessGroup("Netflix"),
-
-    createBusinessGroup("Spotify"),
-
-    createBusinessGroup("Steam"),
-
-    createBusinessGroup("Telegram"),
-
-    createBusinessGroup("TikTok"),
-
-    createBusinessGroup("Apple"),
-
-    createBusinessGroup("Microsoft")
-
-  ];
-
-
-  // ================================================================
-  // 29. Network Test
-  // ================================================================
-
-  var networkTestGroup = {
-
-    "name": "网络检测",
-
-    "type": "select",
-
-    "proxies": []
-
-  };
-
-
-  if (defaultAirportGroup) {
-
-    networkTestGroup["proxies"] = [
-
-      defaultAirportGroup
-
-    ];
-
-  } else {
-
-    networkTestGroup["proxies"] = [
-
-      "一键代理"
-
-    ];
-
-  }
-
-
-  var networkTestIcon =
-    getGroupIcon("网络检测");
-
-
-  if (networkTestIcon) {
-
-    networkTestGroup["icon"] =
-      networkTestIcon;
-
-  }
-
-
-  // ================================================================
-  // 30. Final proxy-group list
-  // ================================================================
-
-  config["proxy-groups"] =
-
-    preservedGroups
-
-      .concat(businessGroups)
-
-      .concat([
-
-        networkTestGroup,
-
-        globalAutoGroup
-
-      ])
-
-      .concat(regionGroups)
-
-      .concat([
-
-        domesticDirectGroup,
-
-        mainSelector
-
-      ]);
-
-
-  // ================================================================
-  // 31. Routing rules
-  // ================================================================
-
-  config["rules"] = [
-
-    // --------------------------------------------------------------
-    // Private / LAN
-    // --------------------------------------------------------------
-
-    "DOMAIN-SUFFIX,lan,DIRECT",
-
-    "DOMAIN-SUFFIX,local,DIRECT",
-
-    "DOMAIN-SUFFIX,localhost,DIRECT",
-
-    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
-
-    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
-
-    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
-
-    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // Network Test
-    // --------------------------------------------------------------
-
-    "RULE-SET,NetworkTest,网络检测",
-
-
-    // --------------------------------------------------------------
-    // AI
-    // --------------------------------------------------------------
-
-    "RULE-SET,AI,AI",
-
-
-    // --------------------------------------------------------------
-    // YouTube
-    // --------------------------------------------------------------
-
-    "RULE-SET,YouTube,YouTube",
-
-
-    // --------------------------------------------------------------
-    // Google
-    // --------------------------------------------------------------
-
-    "RULE-SET,Google,Google",
-
-
-    // --------------------------------------------------------------
-    // GitHub
-    // --------------------------------------------------------------
-
-    "RULE-SET,GitHub,GitHub",
-
-
-    // --------------------------------------------------------------
-    // Netflix
-    // --------------------------------------------------------------
-
-    "RULE-SET,Netflix,Netflix",
-
-
-    // --------------------------------------------------------------
-    // Spotify
-    // --------------------------------------------------------------
-
-    "RULE-SET,Spotify,Spotify",
-
-
-    // --------------------------------------------------------------
-    // Steam
-    // --------------------------------------------------------------
-
-    "RULE-SET,Steam,Steam",
-
-
-    // --------------------------------------------------------------
-    // Telegram
-    // --------------------------------------------------------------
-
-    "RULE-SET,Telegram,Telegram",
-
-
-    // --------------------------------------------------------------
-    // TikTok
-    // --------------------------------------------------------------
-
-    "RULE-SET,TikTok,TikTok",
-
-
-    // --------------------------------------------------------------
-    // Apple
-    // --------------------------------------------------------------
-
-    "RULE-SET,Apple,Apple",
-
-
-    // --------------------------------------------------------------
-    // Microsoft
-    // --------------------------------------------------------------
-
-    "RULE-SET,Microsoft,Microsoft",
-
-
-    // --------------------------------------------------------------
-    // Private
-    // --------------------------------------------------------------
-
-    "GEOSITE,private,国内直连",
-
-    "GEOIP,private,国内直连,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // China
-    // --------------------------------------------------------------
-
-    "GEOSITE,cn,国内直连",
-
-    "GEOIP,cn,国内直连,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // Final
-    // --------------------------------------------------------------
-
-    "MATCH,一键代理"
-
-  ];
-
-
-  // ================================================================
-  // 32. Return generated config
-  // ================================================================
-
-  return config;
-
-}
+    var
