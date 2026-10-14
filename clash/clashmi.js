@@ -1,7 +1,7 @@
 function main(config) {
 
   // ================================================================
-  // Clash Mi / Mihomo Perfect-Rules v1.7 (Nested Region Auto inside Region Manual)
+  // Clash Mi / Mihomo Perfect-Rules v1.7 (Clean Service Groups + Nested Manual/Auto Node Group)
   //
   // Architecture:
   //
@@ -9,9 +9,9 @@ function main(config) {
   //          ↓
   //   Preserve Airport Basic Groups
   //          ↓
-  //   Global Auto + Region Groups (Each region contains Region Auto + Individual Nodes)
+  //   Node Groups: Global Auto + Manual Group (containing side-by-side Region Auto & Manual)
   //          ↓
-  //   Perfect-Rules Service Groups
+  //   Service Policy Groups: AI, YouTube, Google, etc. (pointing to Auto, Manual, Direct)
   //          ↓
   //   Remote Rule Providers
   //
@@ -359,6 +359,8 @@ function main(config) {
 
     "自动选择": "Proxy.png",
 
+    "手动选择": "Proxy.png",
+
     "国内直连": "China.png",
 
     "AI": "AI.png",
@@ -428,6 +430,8 @@ function main(config) {
     "一键代理": true,
 
     "自动选择": true,
+
+    "手动选择": true,
 
     "国内直连": true,
 
@@ -1427,7 +1431,7 @@ function main(config) {
 
 
   // ================================================================
-  // 25. Create Global Auto & Nested Region Groups
+  // 25. Create Global Auto, Region Auto & Region Manual Groups
   // ================================================================
 
   // 1. Global Auto Group
@@ -1466,7 +1470,7 @@ function main(config) {
 
   var regionGroups = [];
 
-  var availableRegions = [];
+  var manualGroupProxies = [];
 
 
   regionOrder.forEach(function(region) {
@@ -1488,7 +1492,7 @@ function main(config) {
     }
 
 
-    // 2. Region Auto Group ([Region] 自动) - Helper group
+    // 2. Region Auto Group ([Region] 自动)
     var autoGroupName = region + " 自动";
 
     var autoGroup = {
@@ -1528,7 +1532,7 @@ function main(config) {
     }
 
 
-    // 3. Region Main Select Group ([Region]) - Contains Auto Group + Individual Nodes
+    // 3. Region Manual Group ([Region]) - Contains Auto Group + Individual Nodes
     var selectGroup = {
 
       "name": region,
@@ -1547,14 +1551,35 @@ function main(config) {
     }
 
 
-    // Push both: auto group must exist for select group to reference it
+    // Push both groups to regionGroups
     regionGroups.push(autoGroup);
 
     regionGroups.push(selectGroup);
 
-    availableRegions.push(region);
+    // Collect region manual group into node group "手动选择"
+    manualGroupProxies.push(region);
 
   });
+
+
+  // 4. Parent Manual Node Group ("手动选择" - contains all region select groups)
+  var manualGroup = {
+
+    "name": "手动选择",
+
+    "type": "select",
+
+    "proxies": manualGroupProxies
+
+  };
+
+  var manualIcon = getGroupIcon("手动选择") || getGroupIcon("一键代理");
+
+  if (manualIcon) {
+
+    manualGroup["icon"] = manualIcon;
+
+  }
 
 
   // ================================================================
@@ -1589,12 +1614,19 @@ function main(config) {
 
 
   // ================================================================
-  // 27. One-click Proxy & Service Group Proxies Pool
+  // 27. Clean Service Group Proxies Pool
   // ================================================================
 
-  var mainProxiesPool = ["自动选择"]
-    .concat(availableRegions)
-    .concat(["国内直连"]);
+  // Service groups only point to Global Auto, Manual Node Group, and Direct
+  var mainProxiesPool = [
+
+    "自动选择",
+
+    "手动选择",
+
+    "国内直连"
+
+  ];
 
 
   var mainSelector = {
@@ -1702,199 +1734,3 @@ function main(config) {
       defaultAirportGroup
 
     ];
-
-  } else {
-
-    networkTestGroup["proxies"] = [
-
-      "一键代理"
-
-    ];
-
-  }
-
-
-  var networkTestIcon =
-    getGroupIcon("网络检测");
-
-
-  if (networkTestIcon) {
-
-    networkTestGroup["icon"] =
-      networkTestIcon;
-
-  }
-
-
-  // ================================================================
-  // 30. Final proxy-group list
-  // ================================================================
-
-  config["proxy-groups"] =
-
-    preservedGroups
-
-      .concat(businessGroups)
-
-      .concat([
-
-        networkTestGroup,
-
-        globalAutoGroup
-
-      ])
-
-      .concat(regionGroups)
-
-      .concat([
-
-        domesticDirectGroup,
-
-        mainSelector
-
-      ]);
-
-
-  // ================================================================
-  // 31. Routing rules
-  // ================================================================
-
-  config["rules"] = [
-
-    // --------------------------------------------------------------
-    // Private / LAN
-    // --------------------------------------------------------------
-
-    "DOMAIN-SUFFIX,lan,DIRECT",
-
-    "DOMAIN-SUFFIX,local,DIRECT",
-
-    "DOMAIN-SUFFIX,localhost,DIRECT",
-
-    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
-
-    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
-
-    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
-
-    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // Network Test
-    // --------------------------------------------------------------
-
-    "RULE-SET,NetworkTest,网络检测",
-
-
-    // --------------------------------------------------------------
-    // AI
-    // --------------------------------------------------------------
-
-    "RULE-SET,AI,AI",
-
-
-    // --------------------------------------------------------------
-    // YouTube
-    // --------------------------------------------------------------
-
-    "RULE-SET,YouTube,YouTube",
-
-
-    // --------------------------------------------------------------
-    // Google
-    // --------------------------------------------------------------
-
-    "RULE-SET,Google,Google",
-
-
-    // --------------------------------------------------------------
-    // GitHub
-    // --------------------------------------------------------------
-
-    "RULE-SET,GitHub,GitHub",
-
-
-    // --------------------------------------------------------------
-    // Netflix
-    // --------------------------------------------------------------
-
-    "RULE-SET,Netflix,Netflix",
-
-
-    // --------------------------------------------------------------
-    // Spotify
-    // --------------------------------------------------------------
-
-    "RULE-SET,Spotify,Spotify",
-
-
-    // --------------------------------------------------------------
-    // Steam
-    // --------------------------------------------------------------
-
-    "RULE-SET,Steam,Steam",
-
-
-    // --------------------------------------------------------------
-    // Telegram
-    // --------------------------------------------------------------
-
-    "RULE-SET,Telegram,Telegram",
-
-
-    // --------------------------------------------------------------
-    // TikTok
-    // --------------------------------------------------------------
-
-    "RULE-SET,TikTok,TikTok",
-
-
-    // --------------------------------------------------------------
-    // Apple
-    // --------------------------------------------------------------
-
-    "RULE-SET,Apple,Apple",
-
-
-    // --------------------------------------------------------------
-    // Microsoft
-    // --------------------------------------------------------------
-
-    "RULE-SET,Microsoft,Microsoft",
-
-
-    // --------------------------------------------------------------
-    // Private
-    // --------------------------------------------------------------
-
-    "GEOSITE,private,国内直连",
-
-    "GEOIP,private,国内直连,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // China
-    // --------------------------------------------------------------
-
-    "GEOSITE,cn,国内直连",
-
-    "GEOIP,cn,国内直连,no-resolve",
-
-
-    // --------------------------------------------------------------
-    // Final
-    // --------------------------------------------------------------
-
-    "MATCH,一键代理"
-
-  ];
-
-
-  // ================================================================
-  // 32. Return generated config
-  // ================================================================
-
-  return config;
-
-}
