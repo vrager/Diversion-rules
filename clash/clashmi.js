@@ -1,20 +1,7 @@
 function main(config) {
 
   // ================================================================
-  // Clash Mi / Mihomo Perfect-Rules v1.7 (Parallel Region Auto & Manual Node Groups)
-  //
-  // Architecture:
-  //
-  //   Airport Subscription
-  //          ↓
-  //   Preserve Airport Basic Groups
-  //          ↓
-  //   Node Groups: Global Auto + Parallel Region Auto & Manual Groups
-  //          ↓
-  //   Service Policy Groups: AI, YouTube, Google, etc.
-  //          ↓
-  //   Remote Rule Providers
-  //
+  // Clash Mi / Mihomo Perfect-Rules v1.7 (Strict ES5 Compatible)
   // ================================================================
 
 
@@ -74,7 +61,7 @@ function main(config) {
 
     "enhanced-mode": "fake-ip",
 
-    "fake-ip-range": "172.19.0.1/16",
+    "fake-ip-range": "198.18.0.1/16",
 
     "fake-ip-filter": [
 
@@ -910,4 +897,993 @@ function main(config) {
 
 
   // ================================================================
-  // 17. Convert airport Auto-Select groups to URL-
+  // 17. Convert airport Auto-Select groups to URL-Test
+  // ================================================================
+
+  preservedGroups.forEach(function(group) {
+
+    if (!group || !group.name) {
+
+      return;
+
+    }
+
+
+    if (!isAutoSelectGroup(group.name)) {
+
+      return;
+
+    }
+
+
+    group.type = "url-test";
+
+
+    group.proxies =
+      proxyNames.slice();
+
+
+    group.url =
+      "https://www.gstatic.com/generate_204";
+
+
+    group.interval = 300;
+
+
+    group.timeout = 5000;
+
+
+    group.tolerance = 50;
+
+
+    group.lazy = true;
+
+
+    group["max-failed-times"] = 3;
+
+
+    group["expected-status"] = 204;
+
+
+    delete group["disable-udp"];
+
+    delete group["strategy"];
+
+  });
+
+
+  // ================================================================
+  // 18. Find airport default manual selector
+  // ================================================================
+
+  function findDefaultAirportGroup() {
+
+    var candidates = [];
+
+
+    originalGroups.forEach(function(group) {
+
+      if (!group || !group.name) {
+
+        return;
+
+      }
+
+
+      var name =
+        String(group.name);
+
+
+      if (managedGroups[name]) {
+
+        return;
+
+      }
+
+
+      if (isAutoSelectGroup(name)) {
+
+        return;
+
+      }
+
+
+      if (isFailoverGroup(name)) {
+
+        return;
+
+      }
+
+
+      if (isBusinessGroupName(name)) {
+
+        return;
+
+      }
+
+
+      if (group.type !== "select") {
+
+        return;
+
+      }
+
+
+      var composition =
+        getProxyComposition(group);
+
+
+      if (composition.actualNodes < 2) {
+
+        return;
+
+      }
+
+
+      candidates.push({
+
+        group: group,
+
+        score: 0,
+
+        index: candidates.length
+
+      });
+
+    });
+
+
+    for (var i = 0; i < candidates.length; i++) {
+
+      if (isAllNodesGroup(candidates[i].group)) {
+
+        return candidates[i].group.name;
+
+      }
+
+    }
+
+
+    if (candidates.length > 0) {
+
+      return candidates[0].group.name;
+
+    }
+
+
+    return null;
+
+  }
+
+
+  var defaultAirportGroup =
+    findDefaultAirportGroup();
+
+
+  // ================================================================
+  // 19. Remote Rule Provider base URL
+  // ================================================================
+
+  var ruleBaseURL =
+    "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/";
+
+
+  // ================================================================
+  // 20. Rule Provider factory
+  // ================================================================
+
+  function createRuleProvider(filename) {
+
+    return {
+
+      "type": "http",
+
+      "behavior": "classical",
+
+      "format": "yaml",
+
+      "url": ruleBaseURL + filename,
+
+      "path": "./rules/" + filename,
+
+      "interval": 86400
+
+    };
+
+  }
+
+
+  // ================================================================
+  // 21. Remote Rule Providers
+  // ================================================================
+
+  config["rule-providers"] = {
+
+    "AI":
+      createRuleProvider("ai.yaml"),
+
+    "YouTube":
+      createRuleProvider("youtube.yaml"),
+
+    "Google":
+      createRuleProvider("google.yaml"),
+
+    "GitHub":
+      createRuleProvider("github.yaml"),
+
+    "Netflix":
+      createRuleProvider("netflix.yaml"),
+
+    "Spotify":
+      createRuleProvider("spotify.yaml"),
+
+    "Steam":
+      createRuleProvider("steam.yaml"),
+
+    "Telegram":
+      createRuleProvider("telegram.yaml"),
+
+    "TikTok":
+      createRuleProvider("tiktok.yaml"),
+
+    "Apple":
+      createRuleProvider("apple.yaml"),
+
+    "Microsoft":
+      createRuleProvider("microsoft.yaml"),
+
+    "NetworkTest":
+      createRuleProvider("network-test.yaml")
+
+  };
+
+
+  // ================================================================
+  // 22. Region detection
+  // ================================================================
+
+  var regionPatterns = {
+
+    "香港": [
+
+      /香港/i,
+
+      /\bHK\b/i,
+
+      /HKG/i,
+
+      /Hong\s*Kong/i,
+
+      /HongKong/i
+
+    ],
+
+
+    "台湾": [
+
+      /台湾/i,
+
+      /台灣/i,
+
+      /\bTW\b/i,
+
+      /TPE/i,
+
+      /KHH/i,
+
+      /TSA/i,
+
+      /Taiwan/i,
+
+      /Taipei/i
+
+    ],
+
+
+    "日本": [
+
+      /日本/i,
+
+      /\bJP\b/i,
+
+      /NRT/i,
+
+      /HND/i,
+
+      /KIX/i,
+
+      /CTS/i,
+
+      /FUK/i,
+
+      /Japan/i,
+
+      /Tokyo/i,
+
+      /Osaka/i
+
+    ],
+
+
+    "新加坡": [
+
+      /新加坡/i,
+
+      /\bSG\b/i,
+
+      /SIN/i,
+
+      /XSP/i,
+
+      /Singapore/i
+
+    ],
+
+
+    "韩国": [
+
+      /韩国/i,
+
+      /韓國/i,
+
+      /\bKR\b/i,
+
+      /ICN/i,
+
+      /GMP/i,
+
+      /PUS/i,
+
+      /Korea/i,
+
+      /Seoul/i
+
+    ],
+
+
+    "美国": [
+
+      /美国/i,
+
+      /\bUS\b/i,
+
+      /\bUSA\b/i,
+
+      /LAX/i,
+
+      /SFO/i,
+
+      /JFK/i,
+
+      /SJC/i,
+
+      /United\s*States/i,
+
+      /America/i,
+
+      /Los\s*Angeles/i,
+
+      /San\s*Jose/i,
+
+      /New\s*York/i
+
+    ],
+
+
+    "加拿大": [
+
+      /加拿大/i,
+
+      /Canada/i,
+
+      /Toronto/i,
+
+      /Vancouver/i,
+
+      /Montreal/i
+
+    ],
+
+
+    "英国": [
+
+      /英国/i,
+
+      /UK/i,
+
+      /United\s*Kingdom/i,
+
+      /England/i,
+
+      /London/i,
+
+      /Manchester/i
+
+    ]
+
+  };
+
+
+  function detectRegion(proxyName) {
+
+    for (var region in regionPatterns) {
+
+      if (!regionPatterns.hasOwnProperty(region)) {
+
+        continue;
+
+      }
+
+
+      var patterns =
+        regionPatterns[region];
+
+
+      for (var i = 0; i < patterns.length; i++) {
+
+        if (patterns[i].test(proxyName)) {
+
+          return region;
+
+        }
+
+      }
+
+    }
+
+
+    return "其他地区";
+
+  }
+
+
+  // ================================================================
+  // 23. Build region node lists
+  // ================================================================
+
+  var regionNodes = {
+
+    "香港": [],
+
+    "台湾": [],
+
+    "日本": [],
+
+    "新加坡": [],
+
+    "韩国": [],
+
+    "美国": [],
+
+    "加拿大": [],
+
+    "英国": [],
+
+    "其他地区": []
+
+  };
+
+
+  originalProxies.forEach(function(proxy) {
+
+    if (!proxy || !proxy.name) {
+
+      return;
+
+    }
+
+
+    var region =
+      detectRegion(String(proxy.name));
+
+
+    regionNodes[region].push(
+
+      proxy.name
+
+    );
+
+  });
+
+
+  // ================================================================
+  // 24. Region order
+  // ================================================================
+
+  var regionOrder = [
+
+    "香港",
+
+    "台湾",
+
+    "日本",
+
+    "新加坡",
+
+    "韩国",
+
+    "美国",
+
+    "加拿大",
+
+    "英国",
+
+    "其他地区"
+
+  ];
+
+
+  // ================================================================
+  // 25. Create Global Auto & Parallel Region Auto / Manual Groups
+  // ================================================================
+
+  // 1. Global Auto Group
+  var globalAutoGroup = {
+
+    "name": "自动选择",
+
+    "type": "url-test",
+
+    "proxies": proxyNames.slice(),
+
+    "url": "https://www.gstatic.com/generate_204",
+
+    "interval": 300,
+
+    "timeout": 5000,
+
+    "tolerance": 50,
+
+    "lazy": true,
+
+    "max-failed-times": 3,
+
+    "expected-status": 204
+
+  };
+
+  var globalAutoIcon = getGroupIcon("一键代理");
+
+  if (globalAutoIcon) {
+
+    globalAutoGroup["icon"] = globalAutoIcon;
+
+  }
+
+
+  var regionGroups = [];
+
+  var mainProxiesPool = ["自动选择"];
+
+
+  regionOrder.forEach(function(region) {
+
+    var nodes =
+      regionNodes[region];
+
+
+    if (
+
+      !nodes ||
+
+      nodes.length === 0
+
+    ) {
+
+      return;
+
+    }
+
+
+    // 2. Region Auto Group ([Region] 自动)
+    var autoGroupName = region + " 自动";
+
+    var autoGroup = {
+
+      "name": autoGroupName,
+
+      "type": "url-test",
+
+      "proxies": nodes,
+
+      "url":
+        "https://www.gstatic.com/generate_204",
+
+      "interval": 300,
+
+      "timeout": 5000,
+
+      "tolerance": 50,
+
+      "lazy": true,
+
+      "max-failed-times": 3,
+
+      "expected-status": 204
+
+    };
+
+
+    var icon =
+      getGroupIcon(region);
+
+
+    if (icon) {
+
+      autoGroup["icon"] = icon;
+
+    }
+
+
+    // 3. Region Manual Group ([Region]) - Contains raw individual nodes of this region
+    var selectGroup = {
+
+      "name": region,
+
+      "type": "select",
+
+      "proxies": nodes
+
+    };
+
+
+    if (icon) {
+
+      selectGroup["icon"] = icon;
+
+    }
+
+
+    // Push both side-by-side into region node groups section
+    regionGroups.push(autoGroup);
+
+    regionGroups.push(selectGroup);
+
+
+    // Add both to main service groups pool so they appear parallelly
+    mainProxiesPool.push(autoGroupName);
+
+    mainProxiesPool.push(region);
+
+  });
+
+
+  // ================================================================
+  // 26. Domestic Direct
+  // ================================================================
+
+  var domesticDirectGroup = {
+
+    "name": "国内直连",
+
+    "type": "select",
+
+    "proxies": [
+
+      "DIRECT"
+
+    ]
+
+  };
+
+
+  var domesticIcon =
+    getGroupIcon("国内直连");
+
+
+  if (domesticIcon) {
+
+    domesticDirectGroup["icon"] =
+      domesticIcon;
+
+  }
+
+
+  mainProxiesPool.push("国内直连");
+
+
+  // ================================================================
+  // 27. One-click Proxy Selector
+  // ================================================================
+
+  var mainSelector = {
+
+    "name": "一键代理",
+
+    "type": "select",
+
+    "proxies": mainProxiesPool
+
+  };
+
+
+  var mainIcon =
+    getGroupIcon("一键代理");
+
+
+  if (mainIcon) {
+
+    mainSelector["icon"] =
+      mainIcon;
+
+  }
+
+
+  // ================================================================
+  // 28. Service groups
+  // ================================================================
+
+  function createBusinessGroup(name) {
+
+    var group = {
+
+      "name": name,
+
+      "type": "select",
+
+      "proxies": mainProxiesPool
+
+    };
+
+
+    var icon =
+      getGroupIcon(name);
+
+
+    if (icon) {
+
+      group["icon"] = icon;
+
+    }
+
+
+    return group;
+
+  }
+
+
+  var businessGroups = [
+
+    createBusinessGroup("AI"),
+
+    createBusinessGroup("YouTube"),
+
+    createBusinessGroup("Google"),
+
+    createBusinessGroup("GitHub"),
+
+    createBusinessGroup("Netflix"),
+
+    createBusinessGroup("Spotify"),
+
+    createBusinessGroup("Steam"),
+
+    createBusinessGroup("Telegram"),
+
+    createBusinessGroup("TikTok"),
+
+    createBusinessGroup("Apple"),
+
+    createBusinessGroup("Microsoft")
+
+  ];
+
+
+  // ================================================================
+  // 29. Network Test
+  // ================================================================
+
+  var networkTestGroup = {
+
+    "name": "网络检测",
+
+    "type": "select",
+
+    "proxies": []
+
+  };
+
+
+  if (defaultAirportGroup) {
+
+    networkTestGroup["proxies"] = [
+
+      defaultAirportGroup
+
+    ];
+
+  } else {
+
+    networkTestGroup["proxies"] = [
+
+      "一键代理"
+
+    ];
+
+  }
+
+
+  var networkTestIcon =
+    getGroupIcon("网络检测");
+
+
+  if (networkTestIcon) {
+
+    networkTestGroup["icon"] =
+      networkTestIcon;
+
+  }
+
+
+  // ================================================================
+  // 30. Final proxy-group list
+  // ================================================================
+
+  config["proxy-groups"] =
+
+    preservedGroups
+
+      .concat(businessGroups)
+
+      .concat([
+
+        networkTestGroup,
+
+        globalAutoGroup
+
+      ])
+
+      .concat(regionGroups)
+
+      .concat([
+
+        domesticDirectGroup,
+
+        mainSelector
+
+      ]);
+
+
+  // ================================================================
+  // 31. Routing rules
+  // ================================================================
+
+  config["rules"] = [
+
+    // --------------------------------------------------------------
+    // Private / LAN
+    // --------------------------------------------------------------
+
+    "DOMAIN-SUFFIX,lan,DIRECT",
+
+    "DOMAIN-SUFFIX,local,DIRECT",
+
+    "DOMAIN-SUFFIX,localhost,DIRECT",
+
+    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+
+    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+
+    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+
+    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+
+
+    // --------------------------------------------------------------
+    // Network Test
+    // --------------------------------------------------------------
+
+    "RULE-SET,NetworkTest,网络检测",
+
+
+    // --------------------------------------------------------------
+    // AI
+    // --------------------------------------------------------------
+
+    "RULE-SET,AI,AI",
+
+
+    // --------------------------------------------------------------
+    // YouTube
+    // --------------------------------------------------------------
+
+    "RULE-SET,YouTube,YouTube",
+
+
+    // --------------------------------------------------------------
+    // Google
+    // --------------------------------------------------------------
+
+    "RULE-SET,Google,Google",
+
+
+    // --------------------------------------------------------------
+    // GitHub
+    // --------------------------------------------------------------
+
+    "RULE-SET,GitHub,GitHub",
+
+
+    // --------------------------------------------------------------
+    // Netflix
+    // --------------------------------------------------------------
+
+    "RULE-SET,Netflix,Netflix",
+
+
+    // --------------------------------------------------------------
+    // Spotify
+    // --------------------------------------------------------------
+
+    "RULE-SET,Spotify,Spotify",
+
+
+    // --------------------------------------------------------------
+    // Steam
+    // --------------------------------------------------------------
+
+    "RULE-SET,Steam,Steam",
+
+
+    // --------------------------------------------------------------
+    // Telegram
+    // --------------------------------------------------------------
+
+    "RULE-SET,Telegram,Telegram",
+
+
+    // --------------------------------------------------------------
+    // TikTok
+    // --------------------------------------------------------------
+
+    "RULE-SET,TikTok,TikTok",
+
+
+    // --------------------------------------------------------------
+    // Apple
+    // --------------------------------------------------------------
+
+    "RULE-SET,Apple,Apple",
+
+
+    // --------------------------------------------------------------
+    // Microsoft
+    // --------------------------------------------------------------
+
+    "RULE-SET,Microsoft,Microsoft",
+
+
+    // --------------------------------------------------------------
+    // Private
+    // --------------------------------------------------------------
+
+    "GEOSITE,private,国内直连",
+
+    "GEOIP,private,国内直连,no-resolve",
+
+
+    // --------------------------------------------------------------
+    // China
+    // --------------------------------------------------------------
+
+    "GEOSITE,cn,国内直连",
+
+    "GEOIP,cn,国内直连,no-resolve",
+
+
+    // --------------------------------------------------------------
+    // Final
+    // --------------------------------------------------------------
+
+    "MATCH,一键代理"
+
+  ];
+
+
+  // ================================================================
+  // 32. Return generated config
+  // ================================================================
+
+  return config;
+
+}
