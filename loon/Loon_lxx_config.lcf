@@ -90,31 +90,33 @@ Sub-RA = NameRegex, FilterKey = "^(?=.*(.*))(?!.*((?i)🇭🇰|🇲🇴|🇹🇼
 故障转移 = fallback,香港-自动,台湾-自动,日本-自动,韩国-自动,新加坡-自动,美国-自动,德国-自动,interval = 60,max-timeout = 2000,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Other/Fallback.png
 负载均衡 = load-balance,香港-自动,台湾-自动,日本-自动,韩国-自动,新加坡-自动,美国-自动,德国-自动,interval = 60,max-timeout = 2000,algorithm = pcc,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Other/LoadBalance.png
 Global = select,Sub-ALL,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/WorldMap.png
-
-香港-自动 = url-test,Sub-HK,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/HongKong.png
-香港-手动 = select,Sub-HK,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/HongKong.png
-德国-自动 = url-test,Sub-DE,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Germany.png
-德国-手动 = select,Sub-DE,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Germany.png
-台湾-自动 = url-test,Sub-TW,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Taiwan.png
-日本-自动 = url-test,Sub-JP,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Japan.png
-韩国-自动 = url-test,Sub-KR,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/SouthKorea.png
-新加坡-自动 = url-test,Sub-SG,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Singapore.png
 美国-自动 = url-test,Sub-US,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/UnitedStates.png
 美国-手动 = select,Sub-US,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/UnitedStates.png
+香港-自动 = url-test,Sub-HK,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/HongKong.png
+香港-手动 = select,Sub-HK,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/HongKong.png
+台湾-自动 = url-test,Sub-TW,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Taiwan.png
+新加坡-自动 = url-test,Sub-SG,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Singapore.png
+韩国-自动 = url-test,Sub-KR,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/SouthKorea.png
+日本-自动 = url-test,Sub-JP,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Japan.png
+德国-自动 = url-test,Sub-DE,interval = 60,tolerance = 50,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Germany.png
+德国-手动 = select,Sub-DE,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/Germany.png
 其他-手动 = select,Sub-RA,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/Flag/UnitedNations.png
 
 AI = select,美国-手动,美国-自动,德国-手动,德国-自动,新加坡-自动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/ChatGPT.png
-TikTok = select,新加坡-自动,日本-自动,台湾-自动,美国-自动,美国-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/TikTok-02.png
 
 GitHub = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/GitHub-02.png
 Microsoft = select,DIRECT,手动选择,时延优选,香港-自动,香港-手动,美国-自动,美国-手动,德国-自动,德国-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Microsoft.png
 Google = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Google.png
+
+TikTok = select,新加坡-自动,日本-自动,台湾-自动,美国-自动,美国-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/TikTok-02.png
 Instagram = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Instagram-02.png
 X = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Twitter-02.png
 Telegram = select,手动选择,时延优选,香港-自动,香港-手动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Telegram-01.png
+
+Streaming = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Conflux.png
 YouTube = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/YouTube.png
 Netflix = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Netflix-02.png
-Streaming = select,手动选择,时延优选,香港-自动,香港-手动,台湾-自动,日本-自动,新加坡-自动,美国-自动,美国-手动,德国-自动,德国-手动,其他-手动,img-url = https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/Conflux.png
+
 [Proxy Chain]
 
 
@@ -151,7 +153,7 @@ https://rule.kelee.one/Loon/Twitter.lsr, policy=X, tag=X, enabled=true
 https://rule.kelee.one/Loon/Telegram.lsr, policy=Telegram, tag=Telegram, enabled=true
 https://rule.kelee.one/Loon/YouTube.lsr, policy=YouTube, tag=YouTube, enabled=true
 https://rule.kelee.one/Loon/Netflix.lsr, policy=Netflix, tag=Netflix, enabled=true
-https://rule.kelee.one/Loon/Global.lsr, policy=United States, tag=Global, enabled=true
+https://rule.kelee.one/Loon/Global.lsr, policy=美国-手动, tag=Global, enabled=true
 https://rule.kelee.one/Loon/ChinaMax.lsr, policy=DIRECT, tag=ChinaMax, enabled=true
 https://kelee.one/Tool/Loon/Lsr/LAN_SPLITTER.lsr, policy=DIRECT, tag=LAN, enabled=true
 https://kelee.one/Tool/Loon/Lsr/REGION_SPLITTER.lsr, policy=DIRECT, tag=CN REGION, enabled=true
@@ -173,9 +175,9 @@ https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/blockAds.plugin, ena
 https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx, pin=true, enabled=true
 https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx, pin=true, enabled=true
 https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx, enabled=true
-https://loon.103516.xyz/Plugin/Sub-Store.lpx, policy=Hong Kong, enabled=true
-https://loon.103516.xyz/Plugin/Script-Hub.lpx, policy=Hong Kong, enabled=true
-https://loon.103516.xyz/Plugin/BoxJs.lpx, policy=Hong Kong, enabled=true
+https://loon.103516.xyz/Plugin/Sub-Store.lpx, policy=香港-手动, enabled=true
+https://loon.103516.xyz/Plugin/Script-Hub.lpx, policy=香港-手动, enabled=true
+https://loon.103516.xyz/Plugin/BoxJs.lpx, policy=香港-手动, enabled=true
 
 [MITM]
 hostname = 
