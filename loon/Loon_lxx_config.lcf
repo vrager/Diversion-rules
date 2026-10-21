@@ -18,8 +18,7 @@ ip-mode = v4-only
 # TUN IPv6配置
 ipv6-vif = off
 # DNS server
-dns-server = system
-#,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114
+dns-server = system,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114
 # DoH server
 doh-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query
 # DoH3 server
@@ -39,9 +38,9 @@ test-timeout = 3
 # 网络接口
 interface-mode = auto
 # 域名拦截行为
-domain-reject-mode = Request #DNS
+domain-reject-mode = DNS
 # DNS拦截方式
-dns-reject-mode = NXDOMAIN #LoopbackIP
+dns-reject-mode = LoopbackIP
 # SNI辅助规则匹配
 sni-sniffing = true
 # 直连时丢弃STUN
