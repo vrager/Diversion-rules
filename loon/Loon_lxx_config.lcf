@@ -39,9 +39,9 @@ test-timeout = 3
 # 网络接口
 interface-mode = auto
 # 域名拦截行为
-domain-reject-mode = DNS
+domain-reject-mode = Request #DNS
 # DNS拦截方式
-dns-reject-mode = LoopbackIP
+dns-reject-mode = NXDOMAIN #LoopbackIP
 # SNI辅助规则匹配
 sni-sniffing = true
 # 直连时丢弃STUN
