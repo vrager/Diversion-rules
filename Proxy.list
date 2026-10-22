@@ -27,6 +27,7 @@ DOMAIN-SUFFIX,goingbus.app
 DOMAIN-SUFFIX,firebaseio.com
 DOMAIN-SUFFIX,crashlytics.com
 DOMAIN-SUFFIX,sentry.io
+DOMAIN-SUFFIX,hyodo.co
 
 # 谷歌 play 商店
 DOMAIN-SUFFIX,play.google.com,PROXY
