@@ -395,13 +395,23 @@ function main(config) {
 
   function getGroupIcon(name) {
 
-    if (!groupIcons[name]) {
-
+    if (!name) {
       return undefined;
+    }
+
+    if (groupIcons[name]) {
+      return iconBaseURL + groupIcons[name];
+    }
+
+    var baseName = String(name).replace(/-自动$/, "").replace(/-手动$/, "");
+
+    if (groupIcons[baseName]) {
+
+      return iconBaseURL + groupIcons[baseName];
 
     }
 
-    return iconBaseURL + groupIcons[name];
+    return undefined;
 
   }
 
@@ -442,41 +452,41 @@ function main(config) {
 
     "Microsoft": true,
 
-    "香港": true,
+    "香港-自动": true,
 
-    "香港 自动": true,
+    "香港-手动": true,
 
-    "台湾": true,
+    "台湾-自动": true,
 
-    "台湾 自动": true,
+    "台湾-手动": true,
 
-    "日本": true,
+    "日本-自动": true,
 
-    "日本 自动": true,
+    "日本-手动": true,
 
-    "新加坡": true,
+    "新加坡-自动": true,
 
-    "新加坡 自动": true,
+    "新加坡-手动": true,
 
-    "韩国": true,
+    "韩国-自动": true,
 
-    "韩国 自动": true,
+    "韩国-手动": true,
 
-    "美国": true,
+    "美国-自动": true,
 
-    "美国 自动": true,
+    "美国-手动": true,
 
-    "加拿大": true,
+    "加拿大-自动": true,
 
-    "加拿大 自动": true,
+    "加拿大-手动": true,
 
-    "英国": true,
+    "英国-自动": true,
 
-    "英国 自动": true,
+    "英国-手动": true,
 
-    "其他地区": true,
+    "其他地区-自动": true,
 
-    "其他地区 自动": true
+    "其他地区-手动": true
 
   };
 
@@ -1475,8 +1485,8 @@ function main(config) {
     }
 
 
-    // 2. Region Auto Group ([Region] 自动)
-    var autoGroupName = region + " 自动";
+    // 2. Region Auto Group ([Region]-自动)
+    var autoGroupName = region + "-自动";
 
     var autoGroup = {
 
@@ -1504,21 +1514,23 @@ function main(config) {
     };
 
 
-    var icon =
-      getGroupIcon(region);
+    var autoIcon =
+      getGroupIcon(autoGroupName);
 
 
-    if (icon) {
+    if (autoIcon) {
 
-      autoGroup["icon"] = icon;
+      autoGroup["icon"] = autoIcon;
 
     }
 
 
-    // 3. Region Manual Group ([Region]) - Contains raw individual nodes of this region
+    // 3. Region Manual Group ([Region]-手动)
+    var selectGroupName = region + "-手动";
+
     var selectGroup = {
 
-      "name": region,
+      "name": selectGroupName,
 
       "type": "select",
 
@@ -1527,9 +1539,13 @@ function main(config) {
     };
 
 
-    if (icon) {
+    var selectIcon =
+      getGroupIcon(selectGroupName);
 
-      selectGroup["icon"] = icon;
+
+    if (selectIcon) {
+
+      selectGroup["icon"] = selectIcon;
 
     }
 
@@ -1543,7 +1559,7 @@ function main(config) {
     // Add both to main service groups pool so they appear parallelly
     mainProxiesPool.push(autoGroupName);
 
-    mainProxiesPool.push(region);
+    mainProxiesPool.push(selectGroupName);
 
   });
 
