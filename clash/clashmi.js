@@ -181,7 +181,7 @@ function main(config) {
   };
 
   // ================================================================
-  // 7. Original airport proxies (Bulletproof REALITY short-id sanitizer)
+  // 7. Original airport proxies (Sanitize YAML short-id number corruption)
   // ================================================================
 
   var rawProxies = Array.isArray(config["proxies"])
@@ -196,33 +196,36 @@ function main(config) {
       return;
     }
 
-    var pType = String(proxy.type || "").toLowerCase();
-    var hasTls = proxy.tls || proxy['reality-opts'] || pType === 'vless';
-
-    if (hasTls) {
-      // 强力清洗顶层 short-id
+    // 针对 VLESS / TLS (REALITY) 节点修复 YAML 解析导致的 short-id 污染
+    if (proxy.type === 'vless' && proxy.tls) {
       ['short-id', 'shortId', 'short_id'].forEach(function(key) {
         if (proxy[key] !== undefined && proxy[key] !== null) {
-          var val = String(proxy[key]).trim();
-          // 如果包含科学计数法字符（如 e, +）或非十六进制，直接删除该字段防止内核报错
-          if (!/^[0-9a-fA-F]+$/.test(val)) {
-            delete proxy[key];
+          if (typeof proxy[key] === 'number') {
+            delete proxy[key]; // 如果被误解析为数字，直接删除
           } else {
-            proxy[key] = val;
+            var sid = String(proxy[key]).trim();
+            if (!/^[0-9a-fA-F]+$/.test(sid)) {
+              delete proxy[key];
+            } else {
+              proxy[key] = sid;
+            }
           }
         }
       });
 
-      // 强力清洗 reality-opts 内部的 short-id
       if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
         ['short-id', 'shortId', 'short_id'].forEach(function(key) {
           var rVal = proxy['reality-opts'][key];
           if (rVal !== undefined && rVal !== null) {
-            var rStr = String(rVal).trim();
-            if (!/^[0-9a-fA-F]+$/.test(rStr)) {
+            if (typeof rVal === 'number') {
               delete proxy['reality-opts'][key];
             } else {
-              proxy['reality-opts'][key] = rStr;
+              var rStr = String(rVal).trim();
+              if (!/^[0-9a-fA-F]+$/.test(rStr)) {
+                delete proxy['reality-opts'][key];
+              } else {
+                proxy['reality-opts'][key] = rStr;
+              }
             }
           }
         });
