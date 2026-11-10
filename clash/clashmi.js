@@ -232,7 +232,6 @@ function main(config) {
     "日本": "Japan.png",
     "新加坡": "Singapore.png",
     "韩国": "Korea.png",
-    "德国": "Germany.png",
     "美国": "United_States.png",
     "其他地区": "Other.png"
   };
@@ -281,8 +280,6 @@ function main(config) {
     "新加坡-手动": true,
     "韩国-自动": true,
     "韩国-手动": true,
-    "德国-自动": true,
-    "德国-手动": true,
     "美国-自动": true,
     "美国-手动": true,
     "其他地区-自动": true,
@@ -652,15 +649,6 @@ function main(config) {
       /Korea/i,
       /Seoul/i
     ],
-    "德国": [
-      /德国/i,
-      /德國/i,
-      /\bDE\b/i,
-      /FRA/i,
-      /MUC/i,
-      /Germany/i,
-      /Frankfurt/i
-    ],
     "美国": [
       /美国/i,
       /\bUS\b/i,
@@ -702,7 +690,6 @@ function main(config) {
     "日本": [],
     "新加坡": [],
     "韩国": [],
-    "德国": [],
     "美国": [],
     "其他地区": []
   };
@@ -725,7 +712,6 @@ function main(config) {
     "日本",
     "新加坡",
     "韩国",
-    "德国",
     "美国",
     "其他地区"
   ];
