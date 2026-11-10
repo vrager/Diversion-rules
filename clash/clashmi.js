@@ -181,20 +181,49 @@ function main(config) {
   };
 
   // ================================================================
-  // 7. Original airport proxies
+  // 7. Original airport proxies (with REALITY short-id sanitizer)
   // ================================================================
 
-  var originalProxies = Array.isArray(config["proxies"])
+  var rawProxies = Array.isArray(config["proxies"])
     ? config["proxies"]
     : [];
 
+  var originalProxies = [];
   var proxyNames = [];
 
-  originalProxies.forEach(function(proxy) {
-    if (proxy && proxy.name) {
-      proxyNames.push(proxy.name);
+  rawProxies.forEach(function(proxy) {
+    if (!proxy || !proxy.name) {
+      return;
     }
+
+    // 针对 VLESS / TLS (REALITY) 节点清洗 short-id 格式，防止内核校验失败报错
+    if (proxy.type === 'vless' && proxy.tls) {
+      if (proxy['short-id'] !== undefined && proxy['short-id'] !== null) {
+        var sid = String(proxy['short-id']).trim();
+        if (/^[0-9a-fA-F]*$/.test(sid)) {
+          proxy['short-id'] = sid;
+        } else {
+          delete proxy['short-id']; // 非法字符或乱码直接剥离，防止内核崩溃
+        }
+      }
+      if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
+        var rsid = proxy['reality-opts']['short-id'];
+        if (rsid !== undefined && rsid !== null) {
+          rsid = String(rsid).trim();
+          if (/^[0-9a-fA-F]*$/.test(rsid)) {
+            proxy['reality-opts']['short-id'] = rsid;
+          } else {
+            delete proxy['reality-opts']['short-id'];
+          }
+        }
+      }
+    }
+
+    originalProxies.push(proxy);
+    proxyNames.push(proxy.name);
   });
+
+  config["proxies"] = originalProxies;
 
   // ================================================================
   // 8. Original airport proxy groups
@@ -232,6 +261,7 @@ function main(config) {
     "日本": "Japan.png",
     "新加坡": "Singapore.png",
     "韩国": "Korea.png",
+    "德国": "Germany.png",
     "美国": "United_States.png",
     "其他地区": "Other.png"
   };
@@ -280,6 +310,8 @@ function main(config) {
     "新加坡-手动": true,
     "韩国-自动": true,
     "韩国-手动": true,
+    "德国-自动": true,
+    "德国-手动": true,
     "美国-自动": true,
     "美国-手动": true,
     "其他地区-自动": true,
@@ -649,6 +681,15 @@ function main(config) {
       /Korea/i,
       /Seoul/i
     ],
+    "德国": [
+      /德国/i,
+      /德國/i,
+      /\bDE\b/i,
+      /FRA/i,
+      /MUC/i,
+      /Germany/i,
+      /Frankfurt/i
+    ],
     "美国": [
       /美国/i,
       /\bUS\b/i,
@@ -690,6 +731,7 @@ function main(config) {
     "日本": [],
     "新加坡": [],
     "韩国": [],
+    "德国": [],
     "美国": [],
     "其他地区": []
   };
@@ -712,6 +754,7 @@ function main(config) {
     "日本",
     "新加坡",
     "韩国",
+    "德国",
     "美国",
     "其他地区"
   ];
