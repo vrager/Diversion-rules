@@ -181,7 +181,7 @@ function main(config) {
   };
 
   // ================================================================
-  // 7. Original airport proxies (Sanitize YAML short-id number corruption)
+  // 7. Original airport proxies (Universal aggressive short-id sanitizer)
   // ================================================================
 
   var rawProxies = Array.isArray(config["proxies"])
@@ -196,40 +196,38 @@ function main(config) {
       return;
     }
 
-    // 针对 VLESS / TLS (REALITY) 节点修复 YAML 解析导致的 short-id 污染
-    if (proxy.type === 'vless' && proxy.tls) {
-      ['short-id', 'shortId', 'short_id'].forEach(function(key) {
-        if (proxy[key] !== undefined && proxy[key] !== null) {
-          if (typeof proxy[key] === 'number') {
-            delete proxy[key]; // 如果被误解析为数字，直接删除
+    // 全面扫描并清洗所有节点的 short-id（防范 YAML 科学计数法污染及非法字符）
+    ['short-id', 'shortId', 'short_id'].forEach(function(key) {
+      if (proxy[key] !== undefined && proxy[key] !== null) {
+        if (typeof proxy[key] === 'number') {
+          delete proxy[key];
+        } else {
+          var val = String(proxy[key]).trim();
+          if (/e/i.test(val) || !/^[0-9a-fA-F]*$/.test(val)) {
+            delete proxy[key];
           } else {
-            var sid = String(proxy[key]).trim();
-            if (!/^[0-9a-fA-F]+$/.test(sid)) {
-              delete proxy[key];
+            proxy[key] = val;
+          }
+        }
+      }
+    });
+
+    if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
+      ['short-id', 'shortId', 'short_id'].forEach(function(key) {
+        var rVal = proxy['reality-opts'][key];
+        if (rVal !== undefined && rVal !== null) {
+          if (typeof rVal === 'number') {
+            delete proxy['reality-opts'][key];
+          } else {
+            var rStr = String(rVal).trim();
+            if (/e/i.test(rStr) || !/^[0-9a-fA-F]*$/.test(rStr)) {
+              delete proxy['reality-opts'][key];
             } else {
-              proxy[key] = sid;
+              proxy['reality-opts'][key] = rStr;
             }
           }
         }
       });
-
-      if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
-        ['short-id', 'shortId', 'short_id'].forEach(function(key) {
-          var rVal = proxy['reality-opts'][key];
-          if (rVal !== undefined && rVal !== null) {
-            if (typeof rVal === 'number') {
-              delete proxy['reality-opts'][key];
-            } else {
-              var rStr = String(rVal).trim();
-              if (!/^[0-9a-fA-F]+$/.test(rStr)) {
-                delete proxy['reality-opts'][key];
-              } else {
-                proxy['reality-opts'][key] = rStr;
-              }
-            }
-          }
-        });
-      }
     }
 
     originalProxies.push(proxy);
