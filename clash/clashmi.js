@@ -181,44 +181,20 @@ function main(config) {
   };
 
   // ================================================================
-  // 7. Original airport proxies (Strictly filter out broken REALITY nodes)
+  // 7. Original airport proxies
   // ================================================================
 
-  var rawProxies = Array.isArray(config["proxies"])
+  var originalProxies = Array.isArray(config["proxies"])
     ? config["proxies"]
     : [];
 
-  var originalProxies = [];
   var proxyNames = [];
 
-  rawProxies.forEach(function(proxy) {
-    if (!proxy || !proxy.name) {
-      return;
+  originalProxies.forEach(function(proxy) {
+    if (proxy && proxy.name) {
+      proxyNames.push(proxy.name);
     }
-
-    // 1. 直接精准剔除已知的报错节点
-    if (proxy.name.indexOf("NosLa | 德国 02") !== -1) {
-      return;
-    }
-
-    // 2. 检查 VLESS / REALITY 节点的 short-id 是否合法
-    var pType = String(proxy.type || "").toLowerCase();
-    if (pType === 'vless' && (proxy.tls || proxy['reality-opts'])) {
-      var sid = proxy['short-id'] || (proxy['reality-opts'] && proxy['reality-opts']['short-id']);
-      if (sid !== undefined && sid !== null && sid !== "") {
-        var sidStr = String(sid).trim();
-        // 如果 short-id 包含科学计数法（e/E）或者不是合法的十六进制、又或者长度为奇数，直接剔除该节点
-        if (/e/i.test(sidStr) || !/^[0-9a-fA-F]+$/.test(sidStr) || sidStr.length % 2 !== 0) {
-          return;
-        }
-      }
-    }
-
-    originalProxies.push(proxy);
-    proxyNames.push(proxy.name);
   });
-
-  config["proxies"] = originalProxies;
 
   // ================================================================
   // 8. Original airport proxy groups
@@ -256,7 +232,6 @@ function main(config) {
     "日本": "Japan.png",
     "新加坡": "Singapore.png",
     "韩国": "Korea.png",
-    "德国": "Germany.png",
     "美国": "United_States.png",
     "其他地区": "Other.png"
   };
@@ -305,8 +280,6 @@ function main(config) {
     "新加坡-手动": true,
     "韩国-自动": true,
     "韩国-手动": true,
-    "德国-自动": true,
-    "德国-手动": true,
     "美国-自动": true,
     "美国-手动": true,
     "其他地区-自动": true,
@@ -676,15 +649,6 @@ function main(config) {
       /Korea/i,
       /Seoul/i
     ],
-    "德国": [
-      /德国/i,
-      /德國/i,
-      /\bDE\b/i,
-      /FRA/i,
-      /MUC/i,
-      /Germany/i,
-      /Frankfurt/i
-    ],
     "美国": [
       /美国/i,
       /\bUS\b/i,
@@ -726,7 +690,6 @@ function main(config) {
     "日本": [],
     "新加坡": [],
     "韩国": [],
-    "德国": [],
     "美国": [],
     "其他地区": []
   };
@@ -749,7 +712,6 @@ function main(config) {
     "日本",
     "新加坡",
     "韩国",
-    "德国",
     "美国",
     "其他地区"
   ];
