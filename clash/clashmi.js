@@ -181,7 +181,7 @@ function main(config) {
   };
 
   // ================================================================
-  // 7. Original airport proxies (with REALITY short-id sanitizer)
+  // 7. Original airport proxies (Bulletproof REALITY short-id sanitizer)
   // ================================================================
 
   var rawProxies = Array.isArray(config["proxies"])
@@ -196,26 +196,36 @@ function main(config) {
       return;
     }
 
-    // 针对 VLESS / TLS (REALITY) 节点清洗 short-id 格式，防止内核校验失败报错
-    if (proxy.type === 'vless' && proxy.tls) {
-      if (proxy['short-id'] !== undefined && proxy['short-id'] !== null) {
-        var sid = String(proxy['short-id']).trim();
-        if (/^[0-9a-fA-F]*$/.test(sid)) {
-          proxy['short-id'] = sid;
-        } else {
-          delete proxy['short-id']; // 非法字符或乱码直接剥离，防止内核崩溃
-        }
-      }
-      if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
-        var rsid = proxy['reality-opts']['short-id'];
-        if (rsid !== undefined && rsid !== null) {
-          rsid = String(rsid).trim();
-          if (/^[0-9a-fA-F]*$/.test(rsid)) {
-            proxy['reality-opts']['short-id'] = rsid;
+    var pType = String(proxy.type || "").toLowerCase();
+    var hasTls = proxy.tls || proxy['reality-opts'] || pType === 'vless';
+
+    if (hasTls) {
+      // 强力清洗顶层 short-id
+      ['short-id', 'shortId', 'short_id'].forEach(function(key) {
+        if (proxy[key] !== undefined && proxy[key] !== null) {
+          var val = String(proxy[key]).trim();
+          // 如果包含科学计数法字符（如 e, +）或非十六进制，直接删除该字段防止内核报错
+          if (!/^[0-9a-fA-F]+$/.test(val)) {
+            delete proxy[key];
           } else {
-            delete proxy['reality-opts']['short-id'];
+            proxy[key] = val;
           }
         }
+      });
+
+      // 强力清洗 reality-opts 内部的 short-id
+      if (proxy['reality-opts'] && typeof proxy['reality-opts'] === 'object') {
+        ['short-id', 'shortId', 'short_id'].forEach(function(key) {
+          var rVal = proxy['reality-opts'][key];
+          if (rVal !== undefined && rVal !== null) {
+            var rStr = String(rVal).trim();
+            if (!/^[0-9a-fA-F]+$/.test(rStr)) {
+              delete proxy['reality-opts'][key];
+            } else {
+              proxy['reality-opts'][key] = rStr;
+            }
+          }
+        });
       }
     }
 
