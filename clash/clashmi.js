@@ -752,4 +752,212 @@ function main(config) {
   // 25. Create Global Auto & Parallel Region Auto / Manual Groups
   // ================================================================
 
-  var globalAutoGroup =
+  var globalAutoGroup = {
+    "name": "自动选择",
+    "type": "url-test",
+    "proxies": proxyNames.slice(),
+    "url": "https://www.gstatic.com/generate_204",
+    "interval": 300,
+    "timeout": 5000,
+    "tolerance": 50,
+    "lazy": true,
+    "max-failed-times": 3,
+    "expected-status": 204
+  };
+
+  var globalAutoIcon = getGroupIcon("一键代理");
+  if (globalAutoIcon) {
+    globalAutoGroup["icon"] = globalAutoIcon;
+  }
+
+  var regionGroups = [];
+  var mainProxiesPool = ["自动选择"];
+
+  regionOrder.forEach(function(region) {
+    var nodes = regionNodes[region];
+    if (!nodes || nodes.length === 0) {
+      return;
+    }
+
+    var autoGroupName = region + "-自动";
+    var autoGroup = {
+      "name": autoGroupName,
+      "type": "url-test",
+      "proxies": nodes,
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": 300,
+      "timeout": 5000,
+      "tolerance": 50,
+      "lazy": true,
+      "max-failed-times": 3,
+      "expected-status": 204
+    };
+
+    var autoIcon = getGroupIcon(autoGroupName);
+    if (autoIcon) {
+      autoGroup["icon"] = autoIcon;
+    }
+
+    var selectGroupName = region + "-手动";
+    var selectGroup = {
+      "name": selectGroupName,
+      "type": "select",
+      "proxies": nodes
+    };
+
+    var selectIcon = getGroupIcon(selectGroupName);
+    if (selectIcon) {
+      selectGroup["icon"] = selectIcon;
+    }
+
+    regionGroups.push(autoGroup);
+    regionGroups.push(selectGroup);
+
+    mainProxiesPool.push(autoGroupName);
+    mainProxiesPool.push(selectGroupName);
+  });
+
+  // ================================================================
+  // 26. Domestic Direct
+  // ================================================================
+
+  var domesticDirectGroup = {
+    "name": "国内直连",
+    "type": "select",
+    "proxies": [
+      "DIRECT"
+    ]
+  };
+
+  var domesticIcon = getGroupIcon("国内直连");
+  if (domesticIcon) {
+    domesticDirectGroup["icon"] = domesticIcon;
+  }
+
+  mainProxiesPool.push("国内直连");
+
+  // ================================================================
+  // 27. One-click Proxy Selector
+  // ================================================================
+
+  var mainSelector = {
+    "name": "一键代理",
+    "type": "select",
+    "proxies": mainProxiesPool
+  };
+
+  var mainIcon = getGroupIcon("一键代理");
+  if (mainIcon) {
+    mainSelector["icon"] = mainIcon;
+  }
+
+  // ================================================================
+  // 28. Service groups
+  // ================================================================
+
+  function createBusinessGroup(name) {
+    var group = {
+      "name": name,
+      "type": "select",
+      "proxies": mainProxiesPool
+    };
+    var icon = getGroupIcon(name);
+    if (icon) {
+      group["icon"] = icon;
+    }
+    return group;
+  }
+
+  var businessGroups = [
+    createBusinessGroup("AI"),
+    createBusinessGroup("YouTube"),
+    createBusinessGroup("Google"),
+    createBusinessGroup("GitHub"),
+    createBusinessGroup("Netflix"),
+    createBusinessGroup("Spotify"),
+    createBusinessGroup("Steam"),
+    createBusinessGroup("Telegram"),
+    createBusinessGroup("TikTok"),
+    createBusinessGroup("Apple"),
+    createBusinessGroup("Microsoft")
+  ];
+
+  // ================================================================
+  // 29. Network Test
+  // ================================================================
+
+  var networkTestGroup = {
+    "name": "网络检测",
+    "type": "select",
+    "proxies": []
+  };
+
+  if (defaultAirportGroup) {
+    networkTestGroup["proxies"] = [
+      defaultAirportGroup
+    ];
+  } else {
+    networkTestGroup["proxies"] = [
+      "一键代理"
+    ];
+  }
+
+  var networkTestIcon = getGroupIcon("网络检测");
+  if (networkTestIcon) {
+    networkTestGroup["icon"] = networkTestIcon;
+  }
+
+  // ================================================================
+  // 30. Final proxy-group list
+  // ================================================================
+
+  config["proxy-groups"] = preservedGroups
+    .concat(businessGroups)
+    .concat([
+      networkTestGroup,
+      globalAutoGroup
+    ])
+    .concat(regionGroups)
+    .concat([
+      domesticDirectGroup,
+      mainSelector
+    ]);
+
+  // ================================================================
+  // 31. Routing rules
+  // ================================================================
+
+  config["rules"] = [
+    "DOMAIN-SUFFIX,lan,DIRECT",
+    "DOMAIN-SUFFIX,local,DIRECT",
+    "DOMAIN-SUFFIX,localhost,DIRECT",
+    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+    "RULE-SET,NetworkTest,网络检测",
+    "RULE-SET,AI,AI",
+    "RULE-SET,YouTube,YouTube",
+    "RULE-SET,Google,Google",
+    "RULE-SET,GitHub,GitHub",
+    "RULE-SET,Netflix,Netflix",
+    "RULE-SET,Spotify,Spotify",
+    "RULE-SET,Steam,Steam",
+    "RULE-SET,Telegram,Telegram",
+    "RULE-SET,TikTok,TikTok",
+    "RULE-SET,Apple,Apple",
+    "RULE-SET,Microsoft,Microsoft",
+    "GEOSITE,private,国内直连",
+    "GEOIP,private,国内直连,no-resolve",
+    "GEOSITE,cn,国内直连",
+    "GEOIP,cn,国内直连,no-resolve",
+    "MATCH,一键代理"
+  ];
+
+  // ================================================================
+  // 32. Return generated config
+  // ================================================================
+
+  return config;
+
+}
